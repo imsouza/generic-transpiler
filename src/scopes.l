@@ -1,7 +1,3 @@
-%{
-    /* Javelin Preparser */
-%}
-
 %option noyywrap
 
 %{

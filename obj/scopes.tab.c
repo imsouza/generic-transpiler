@@ -165,13 +165,14 @@ enum yysymbol_kind_t
   YYSYMBOL_YYUNDEF = 2,                    /* "invalid token"  */
   YYSYMBOL_EOL = 3,                        /* EOL  */
   YYSYMBOL_4_ = 4,                         /* ' '  */
-  YYSYMBOL_5_t_ = 5,                       /* '\t'  */
+  YYSYMBOL_5_ = 5,                         /* ';'  */
   YYSYMBOL_TOK = 6,                        /* TOK  */
-  YYSYMBOL_YYACCEPT = 7,                   /* $accept  */
-  YYSYMBOL_input = 8,                      /* input  */
-  YYSYMBOL_spaceindent = 9,                /* spaceindent  */
-  YYSYMBOL_tabindent = 10,                 /* tabindent  */
-  YYSYMBOL_line = 11                       /* line  */
+  YYSYMBOL_7_t_ = 7,                       /* '\t'  */
+  YYSYMBOL_YYACCEPT = 8,                   /* $accept  */
+  YYSYMBOL_input = 9,                      /* input  */
+  YYSYMBOL_spaceindent = 10,               /* spaceindent  */
+  YYSYMBOL_tabindent = 11,                 /* tabindent  */
+  YYSYMBOL_line = 12                       /* line  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -499,10 +500,10 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  2
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   14
+#define YYLAST   16
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  7
+#define YYNTOKENS  8
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  5
 /* YYNRULES -- Number of rules.  */
@@ -525,12 +526,12 @@ union yyalloc
    as returned by yylex.  */
 static const yytype_int8 yytranslate[] =
 {
-       0,     2,     2,     2,     2,     2,     2,     2,     2,     5,
+       0,     2,     2,     2,     2,     2,     2,     2,     2,     7,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     4,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,     5,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -574,8 +575,8 @@ static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "\"end of file\"", "error", "\"invalid token\"", "EOL", "' '", "'\\t'",
-  "TOK", "$accept", "input", "spaceindent", "tabindent", "line", YY_NULLPTR
+  "\"end of file\"", "error", "\"invalid token\"", "EOL", "' '", "';'",
+  "TOK", "'\\t'", "$accept", "input", "spaceindent", "tabindent", "line", YY_NULLPTR
 };
 
 static const char *
@@ -585,7 +586,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-4)
+#define YYPACT_NINF (-3)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -599,8 +600,8 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -4,     0,    -4,    -4,    -4,     4,    -3,    -4,    -4,    -4,
-       1,    -1,    -4,    -4,    -4,    -4
+      -3,     0,    -3,    -3,    -3,    -2,     3,    -3,    -3,    -3,
+       4,     2,    -3,    -3,    -3,    -3
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -608,14 +609,14 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       2,     0,     1,     3,    11,     0,     4,    13,    14,    12,
+       2,     0,     1,     3,    11,     0,     4,    13,    12,    14,
        7,     9,     5,     6,     8,    10
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -4,    -4,     2,     3,    -4
+      -3,    -3,     1,     5,    -3
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
@@ -629,29 +630,29 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       2,    10,    11,     3,    11,    10,     4,     6,     7,     8,
-       9,     0,    14,     0,    15
+       2,     6,     7,     3,     8,     9,     4,    10,    10,    11,
+      11,    14,     0,     0,     0,     0,    15
 };
 
 static const yytype_int8 yycheck[] =
 {
-       0,     4,     5,     3,     5,     4,     6,     3,     4,     5,
-       6,    -1,    10,    -1,    11
+       0,     3,     4,     3,     6,     7,     6,     4,     4,     7,
+       7,    10,    -1,    -1,    -1,    -1,    11
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     8,     0,     3,     6,    11,     3,     4,     5,     6,
-       4,     5,     9,    10,     9,    10
+       0,     9,     0,     3,     6,    12,     3,     4,     6,     7,
+       4,     7,    10,    11,    10,    11
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,     7,     8,     8,     8,     8,     8,     9,     9,    10,
-      10,    11,    11,    11,    11
+       0,     8,     9,     9,     9,     9,     9,    10,    10,    11,
+      11,    12,    12,    12,    12
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
@@ -1402,7 +1403,7 @@ yyreduce:
     }
     printf("\n");
 }
-#line 1406 "obj/scopes.tab.c"
+#line 1407 "obj/scopes.tab.c"
     break;
 
   case 5: /* input: input line EOL spaceindent  */
@@ -1410,7 +1411,7 @@ yyreduce:
                              {
     handle_indent(' ', (yyvsp[0].int_val));
 }
-#line 1414 "obj/scopes.tab.c"
+#line 1415 "obj/scopes.tab.c"
     break;
 
   case 6: /* input: input line EOL tabindent  */
@@ -1418,31 +1419,31 @@ yyreduce:
                            {
     handle_indent('\t', (yyvsp[0].int_val));
 }
-#line 1422 "obj/scopes.tab.c"
+#line 1423 "obj/scopes.tab.c"
     break;
 
   case 7: /* spaceindent: ' '  */
 #line 58 "src/scopes.y"
       { (yyval.int_val) = 1; }
-#line 1428 "obj/scopes.tab.c"
+#line 1429 "obj/scopes.tab.c"
     break;
 
   case 8: /* spaceindent: ' ' spaceindent  */
 #line 59 "src/scopes.y"
                   { (yyval.int_val) = 1 + (yyvsp[0].int_val); }
-#line 1434 "obj/scopes.tab.c"
+#line 1435 "obj/scopes.tab.c"
     break;
 
   case 9: /* tabindent: '\t'  */
 #line 62 "src/scopes.y"
        { (yyval.int_val) = 1; }
-#line 1440 "obj/scopes.tab.c"
+#line 1441 "obj/scopes.tab.c"
     break;
 
   case 10: /* tabindent: '\t' tabindent  */
 #line 63 "src/scopes.y"
                  { (yyval.int_val) = 1 + (yyvsp[0].int_val); }
-#line 1446 "obj/scopes.tab.c"
+#line 1447 "obj/scopes.tab.c"
     break;
 
   case 11: /* line: TOK  */
@@ -1451,7 +1452,7 @@ yyreduce:
   extern int yylineno;
   printf("%d:%s ", yylineno, (yyvsp[0].str_val)->c_str());
 }
-#line 1455 "obj/scopes.tab.c"
+#line 1456 "obj/scopes.tab.c"
     break;
 
   case 12: /* line: line TOK  */
@@ -1459,11 +1460,11 @@ yyreduce:
            {
   printf("%s ", (yyvsp[0].str_val)->c_str());
 }
-#line 1463 "obj/scopes.tab.c"
+#line 1464 "obj/scopes.tab.c"
     break;
 
 
-#line 1467 "obj/scopes.tab.c"
+#line 1468 "obj/scopes.tab.c"
 
       default: break;
     }
