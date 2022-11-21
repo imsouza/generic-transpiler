@@ -1,6 +1,6 @@
 # Compiler
 CC   = g++
-OPTS = -std=gnu++11 -g
+OPTS = -std=gnu++11 -g -Wno-return-type -O3 -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable
 
 BIN_DIR = 'bin'
 SRC_DIR = 'src'

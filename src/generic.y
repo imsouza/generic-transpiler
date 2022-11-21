@@ -14,7 +14,7 @@
     FunctionStack *lastFuncStack;
 %}
 
-%error-verbose
+%define parse.error verbose
 
 %union {
   NBlock *block_p;

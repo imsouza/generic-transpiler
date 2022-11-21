@@ -15,7 +15,7 @@
     void handle_indent(char type, int multiplicity);
 %}
 
-%error-verbose
+%define parse.error verbose
 
 %union {
     int int_val;
