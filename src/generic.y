@@ -182,6 +182,51 @@ elif: ELIF expr '{' block '}' { $$ = new NElifStatement($2, $4, NULL, NULL); }
 else: ELSE '{' block '}' { $$ = new NElseStatement($3); }
 ;
 
+def: DEF funcDef block {
+  $2->stmt = $3;
+  // In case the type has been implied
+  Type *type = lastFuncStack->get_type();
+  $2->type = type->isUnset() ? new VoidType() : type;
+  $$ = $2;
+};
+// So we can define a function before evaluating the content (allow recursion)
+funcDef: ID '(' args ')' rtype ':' {
+    $$ = new NFunctionDeclStatement($1, $3, $5, NULL);
+    funcStack->stmt = $$;
+    beginFunctionScope = new FunctionScope(currentScope, $$);
+};
+args: /* empty */ { $$ = NULL; }
+    | arg_list { $$ = $1; }
+;
+arg_list:
+      ID ':' type { $$ = new NArgs($1, $3, NULL); }
+    | ID ':' type ',' arg_list { $$ = new NArgs($1, $3, $5); }
+    | ID { $$ = new NArgs($1, new UnsetType(), NULL); }
+    | ID ',' arg_list { $$ = new NArgs($1, new UnsetType(), $3); }
+;
+
+// Pushes the function type to the stack here, so we know what returns should be
+rtype: /* empty */ {
+  $$ = new UnsetType();
+  funcStack = new FunctionStack(currentScope->depth(), funcStack, $$);
+} | RTYPE type {
+  $$ = $2;
+  funcStack = new FunctionStack(currentScope->depth(), funcStack, $$);
+};
+
+args2: /* empty */ { $$ = NULL; }
+    | arg_list2 { $$ = $1; }
+;
+arg_list2: expr { $$ = new NExpressionArgs($1, NULL); }
+    | expr ',' arg_list2 { $$ = new NExpressionArgs($1, $3); }
+;
+
+function_call: ID '(' args2 ')' { $$ = new NFunctionCallExpression($1, $3); }
+;
+
+// In the future, this should check the symbol table
+type: ID {if ($1->name == "str") $$ =  new StringType();
+          else $$ = new BasicType($1->name);}
 %%
 
 #include "../obj/generic.yy.c"

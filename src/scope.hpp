@@ -119,7 +119,7 @@ public:
   }
   
   virtual Type* set_type(Type *type) {
-    this->type = type;
+      this->type = type;
   }
 };
 

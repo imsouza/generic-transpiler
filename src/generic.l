@@ -16,7 +16,7 @@ String      \"(\\.|[^\"])*\"|\'(\\.|[^\'])*\'
 Id          (([a-zA-Z_])([a-zA-Z0-9_])*)
 Operator    ("+"|"-"|"*"|"/"|"%"|"<"|"<="|">="|">"|"=="|"!="|"&"|"|"|"^"|">>"|"<<")
 Delimiter   (":"|";"|"."|","|"="|"'"|"\""|"("|")"|"{"|"}"|"["|"]"|"+="|"-="|"*="|"%="|"&="|"|="|"^="|">>="|"<<="|"->")
-Keyword     ("and"|"not"|"while"|"elif"|"or"|"else"|"if"|"pass"|"break"|"print"|"class"|"in"|"continue"|"is"|"return"|"for"|"int"|"float"|"str"|"list")
+Keyword     ("and"|"not"|"while"|"elif"|"or"|"else"|"if"|"pass"|"break"|"print"|"class"|"in"|"continue"|"is"|"return"|"def"|"for"|"int"|"float"|"str"|"list"|"dict")
 %%
 
 {LineNoInd} {
@@ -71,6 +71,7 @@ Keyword     ("and"|"not"|"while"|"elif"|"or"|"else"|"if"|"pass"|"break"|"print"|
 "if"          return IF;
 "else"        return ELSE;
 "elif"        return ELIF;
+"def"         return DEF;
 "->"          return RTYPE;
 "{"           return '{';
 "}"           return '}';
