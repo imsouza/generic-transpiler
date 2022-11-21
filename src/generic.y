@@ -167,7 +167,7 @@ while: WHILE expr '{' block '}' { $$ = new NWhileStatement($2, $4); }
 ;
 
 for: for_header block '}' { $$ = $1; $$->stmt = $2; } ;
-for_header: FOR ID IN expr '{' { $$ = new NForStatement($2, $4, NULL); };
+for_header: FOR ID IN expr ')' '{' { $$ = new NForStatement($2, $4, NULL); };
 
 if: IF expr '{' block '}' { $$ = new NIfStatement($2, $4, NULL, NULL); }
     | IF expr '{' block elif '}' { $$ = new NIfStatement($2, $4, $5, NULL); }
@@ -239,7 +239,7 @@ int main() {
     yyparse();
 
     // One header to rule them all
-    cout << "#include \"inc/generic.h\"\n";
+    cout << "#include <iostream>\n#include <string>\n#include <vector>\n#include <iterator>\n";
 
     // Generate the headers first, so we don't run into annoying mutuality conflicts
     for (NFunctionDeclStatement *stmt : rootFuncStmts) {
