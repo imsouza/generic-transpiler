@@ -3,6 +3,7 @@
 #include <vector>
 #include <stack>
 #include <iostream>
+#include <algorithm>
 #include <sstream>
 #include <fstream>
 
@@ -37,20 +38,28 @@ struct pytoc_grammar : qi::grammar<Iterator, std::vector<std::string>(), Skipper
     INTEGER = lexeme[qi::char_ >> *qi::alnum] >> lit('=') >> qi::int_ >> lit(';');
     FOR 		= qi::string("for") >> '(' >> RANGE >> ')' >> '{' >> *INTEGER || *IF >> '}';
     RANGE 	= qi::word >> qi::string("in") >> qi::string("range") >> '('  >> qi::int_ >> ')';
-    IF 			= qi::string("if") >> '(' >> EXPR >> ')' >> '{' >> *INTEGER  >> '}';
-    EXPR 		= qi::word >> '<' >> qi::int_;
+    IF 			= qi::string("if") >> '(' >> LT >> ')' >> '{' >> *INTEGER  >> '}';
+    LT 		  = qi::word >> '<' >> qi::int_;
     CODE 		= *INTEGER || *FOR || *IF;
   }
 
   qi::rule<Iterator, std::string(), Skipper> INTEGER;
   qi::rule<Iterator, std::string(), Skipper> FOR;
   qi::rule<Iterator, std::string(), Skipper> IF;
-  qi::rule<Iterator, std::string(), Skipper> EXPR;
+  qi::rule<Iterator, std::string(), Skipper> LT;
   qi::rule<Iterator, std::string(), Skipper> RANGE;
   qi::rule<Iterator, std::string(), Skipper> PRINT;
   qi::rule<Iterator, boost::variant<int, bool>(), Skipper> VALUE;
   qi::rule<Iterator, std::vector<std::string>(), Skipper> CODE;
 };
+
+
+std::string convertLine (std::string str) {
+  str.erase(std::remove(str.begin(), str.end(), '\n'), str.cend());
+  str.erase(std::remove(str.begin(), str.end(), '\t'), str.cend());
+  str.erase(std::remove(str.begin(), str.end(), ' '), str.cend());
+  return str;
+}
 
 
 int main() {
@@ -68,6 +77,8 @@ int main() {
         std::cout << elem << "\n";
       }
     }
+
+    std::cout << convertLine(s);
 
     if (s == "qt") {
       exit(0);
