@@ -1,31 +1,47 @@
-# Compiler
-CC   = g++
-OPTS = -std=gnu++11 -g -Wno-return-type -O3 -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable
+# Nome do projeto
+PROJECT = generic
 
-BIN_DIR = 'bin'
-SRC_DIR = 'src'
-OBJ_DIR = 'obj'
+# Definição dos diretórios dinâmicos
+DIR_OUT = obj
+DIR_SRC += .
+DIR_SRC = ./src
+DIR_INC += $(addprefix -I, $(DIR_SRC))
 
-BINARY = $(BIN_DIR)/generic
+C_SOURCE += $(wildcard $(addsuffix /*.cpp, $(DIR_SRC)))
+OBJ := $(patsubst %.cpp, %.o, $(C_SOURCE))
 
-SRCS = $(shell find $(SRC_DIR) -name '[a-zA-Z0-9]*.cpp')
+# Definição do compilador
+CC = g++
 
-# Targets
-$(BINARY): builddir compileScopeParser compileMainParser
+# Arquivo executável
+EXE := obj/$(PROJECT)
+ 
+# Definição das flags de compilação
+CC_FLAGS = 	-c	  	\
+            -std=c++17	\
 
+# Comandos para limpeza recursiva dos arquivos 
+# remanescentes na pasta src/		 
+RM = rm -rf
+MD = $(shell mkdir -p $(DIR_OUT))
+
+# Linkagem e Compilação
+.PHONY:all
+
+all:$(OBJ) $(EXE)
+%.o: %.cpp
+	$(MD)
+	$(CC) $(DIR_INC) $(CC_FLAGS) $< -o $@
+
+$(EXE): $(OBJ)
+	$(CC) $(OBJ) -o $@ $(DIR_INC)
+
+	$(RM) $(DIR_SRC)/*.o
+
+# Limpa os arquivos objetos
 clean:
-	rm $(BINARY) $(OBJ_DIR) -Rf
+	cd obj && $(RM) $(PROJECT)
 
-compileScopeParser:
-	flex -o $(OBJ_DIR)/scopes.yy.c $(SRC_DIR)/scopes.l
-	bison -o $(OBJ_DIR)/scopes.tab.c $(SRC_DIR)/scopes.y
-	$(CC) $(OPTS) $(OBJ_DIR)/scopes.tab.c -o bin/scopeParser
-
-compileMainParser:
-	flex -o $(OBJ_DIR)/generic.yy.c $(SRC_DIR)/generic.l
-	bison -o $(OBJ_DIR)/generic.tab.c $(SRC_DIR)/generic.y
-	$(CC) $(OPTS) $(OBJ_DIR)/generic.tab.c $(SRCS) -o bin/genericParser
-
-builddir:
-	mkdir -p $(OBJ_DIR)
-	mkdir -p bin
+# Executa o programa
+run: $(EXE)
+	cd obj && ./${PROJECT}
