@@ -32,7 +32,7 @@ template <typename Iterator, typename Skipper>
 struct pytoc_grammar : qi::grammar<Iterator,
   std::vector<std::string>(), Skipper> {
     pytoc_grammar() : pytoc_grammar::base_type{codigo} {
-        variavel_inteira = lexeme[qi::char_ >> *qi::alnum];
+        variavel_inteira = lexeme[qi::char_ >> *qi::alnum] >> lit(';');
         atribuicao =  variavel_inteira >> lit('=') >> qi::int_ >> lit(';');
         for_instrucao = qi::string("for") >> '(' >> range_expressao >> ')' >> '{' >> *variavel_inteira || *if_instrucao >> '}';
         range_expressao = qi::word >> qi::string("in") >> qi::string("range") >> '('  >> qi::int_ >> ')';
@@ -55,7 +55,9 @@ struct pytoc_grammar : qi::grammar<Iterator,
 
 int main()
 {
-    for (std::string s; std::getline(std::cin, s);) {
+    // for (std::string s; std::getline(std::cin, s);) {
+        std::string s;
+        std::getline(std::cin, s);
         auto it = s.begin();
         pytoc_grammar<std::string::iterator, ascii::space_type> g;
         std::vector<std::string> v;
@@ -65,6 +67,6 @@ int main()
         }
         if (it != std::end(s))
             std::cerr << "Erro em " << *it << "\n";
-    }
+    // }
 }
 
