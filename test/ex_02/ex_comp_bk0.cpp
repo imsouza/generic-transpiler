@@ -36,7 +36,7 @@ struct pytoc_grammar : qi::grammar<Iterator,
         atribuicao =  variavel_inteira >> lit('=') >> qi::int_ >> lit(';');
         for_instrucao = qi::string("for") >> '(' >> range_expressao >> ')' >> '{' >> *atribuicao || *if_instrucao >> '}';
         range_expressao = variavel_inteira >> qi::string("in") >> qi::string("range") >> '('  >> qi::int_ >> ')';
-        if_instrucao = qi::string("if") >> '(' >> comp_expressao >> ')' >> '{' >> *atribuicao >> '}';
+        if_instrucao = qi::string("if") >> '(' >> comp_expressao >> ')' >> '{' >> *atribuicao  >> '}';
         comp_expressao = variavel_inteira >> '<' >> qi::int_;
         // codigo = *variavel_inteira | *if_instrucao | *for_instrucao;
         codigo = *atribuicao || *for_instrucao || *if_instrucao;
