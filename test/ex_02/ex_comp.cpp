@@ -6,12 +6,25 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
+#include <fstream>
+#include <stringview>
 
 using namespace std;
 using namespace boost::spirit;
 
-class Prprocessa {
+class Preprocessa {
     stringstream buffer;
+    stringview sv {"arquivo_intermediario_00.i"};
+    Preprocessa() {}
+    public:
+        static Preprocessa &getSingleton() {
+            static Preprocessa pp;
+            return pp;
+        }
+        virtual ~Preprocessa() {}
+        void le(istream &i) {
+
+        }
 };
 
 template <typename Iterator, typename Skipper>
@@ -41,6 +54,8 @@ struct pytoc_grammar : qi::grammar<Iterator,
 
 int main()
 {
+    static Preprocessa &pp = Preprocessa::getSingleton();
+    pp.le(cin);
     for (std::string s; std::getline(std::cin, s);) {
         auto it = s.begin();
         pytoc_grammar<std::string::iterator, ascii::space_type> g;
