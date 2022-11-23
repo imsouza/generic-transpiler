@@ -4,35 +4,35 @@
 #include <boost/spirit/include/qi.hpp>
 #include <string>
 #include <vector>
+#include <stack>
 #include <iostream>
 #include <sstream>
 #include <fstream>
-#include <stringview>
 
 using namespace std;
 using namespace boost::spirit;
 
-class Preprocessa {
-    stringstream buffer;
-    stringview sv {"arquivo_intermediario_00.i"};
-    Preprocessa() {}
-    public:
-        static Preprocessa &getSingleton() {
-            static Preprocessa pp;
-            return pp;
-        }
-        virtual ~Preprocessa() {}
-        void le(istream &i) {
+template <typename Iterator, typename Skipper>
+struct Preprocess : qi::grammar<Iterator, std::vector<std::string>(), Skipper> {
+    Preprocess() : Preprocess::base_type{codigo} {
+        for_instrucao = qi::string("for");
+        if_instrucao = qi::string("if");
+        while_instrucao = qi::string("while");
+        // codigo = *variavel_inteira | *if_instrucao | *for_instrucao;
+        codigo = *for_instrucao || *if_instrucao || *while_instrucao;
+    }
 
-        }
+    qi::rule<Iterator, std::string(), Skipper> for_instrucao;
+    qi::rule<Iterator, std::string(), Skipper> if_instrucao;
+    qi::rule<Iterator, std::string(), Skipper> while_instrucao;
+    qi::rule<Iterator, std::vector<std::string>(), Skipper> codigo;
 };
 
 template <typename Iterator, typename Skipper>
 struct pytoc_grammar : qi::grammar<Iterator,
   std::vector<std::string>(), Skipper> {
     pytoc_grammar() : pytoc_grammar::base_type{codigo} {
-
-        variavel_inteira = qi::word >> lit('=') >> qi::int_ >> lit(';');
+        variavel_inteira = lexeme[qi::char_ >> *qi::alnum] >> lit('=') >> qi::int_ >> lit(';');
         for_instrucao = qi::string("for") >> '(' >> range_expressao >> ')' >> '{' >> *variavel_inteira || *if_instrucao >> '}';
         range_expressao = qi::word >> qi::string("in") >> qi::string("range") >> '('  >> qi::int_ >> ')';
         if_instrucao = qi::string("if") >> '(' >> comp_expressao >> ')' >> '{' >> *variavel_inteira  >> '}';
@@ -48,14 +48,11 @@ struct pytoc_grammar : qi::grammar<Iterator,
     qi::rule<Iterator, std::string(), Skipper> range_expressao;
     qi::rule<Iterator, std::string(), Skipper> print_funcao;
     qi::rule<Iterator, boost::variant<int, bool>(), Skipper> valor;
-    qi::rule<Iterator, std::vector<std::string>(), Skipper>
-        codigo;
+    qi::rule<Iterator, std::vector<std::string>(), Skipper> codigo;
 };
 
 int main()
 {
-    static Preprocessa &pp = Preprocessa::getSingleton();
-    pp.le(cin);
     for (std::string s; std::getline(std::cin, s);) {
         auto it = s.begin();
         pytoc_grammar<std::string::iterator, ascii::space_type> g;
