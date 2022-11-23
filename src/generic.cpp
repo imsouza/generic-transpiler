@@ -58,6 +58,7 @@ std::string convertLine (std::string str) {
   str.erase(std::remove(str.begin(), str.end(), '\n'), str.cend());
   str.erase(std::remove(str.begin(), str.end(), '\t'), str.cend());
   str.erase(std::remove(str.begin(), str.end(), ' '), str.cend());
+  
   return str;
 }
 
