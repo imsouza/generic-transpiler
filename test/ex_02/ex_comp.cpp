@@ -13,22 +13,6 @@ using namespace std;
 using namespace boost::spirit;
 
 template <typename Iterator, typename Skipper>
-struct Preprocess : qi::grammar<Iterator, std::vector<std::string>(), Skipper> {
-    Preprocess() : Preprocess::base_type{codigo} {
-        for_instrucao = qi::string("for");
-        if_instrucao = qi::string("if");
-        while_instrucao = qi::string("while");
-        // codigo = *variavel_inteira | *if_instrucao | *for_instrucao;
-        codigo = *for_instrucao || *if_instrucao || *while_instrucao;
-    }
-
-    qi::rule<Iterator, std::string(), Skipper> for_instrucao;
-    qi::rule<Iterator, std::string(), Skipper> if_instrucao;
-    qi::rule<Iterator, std::string(), Skipper> while_instrucao;
-    qi::rule<Iterator, std::vector<std::string>(), Skipper> codigo;
-};
-
-template <typename Iterator, typename Skipper>
 struct pytoc_grammar : qi::grammar<Iterator,
   std::vector<std::string>(), Skipper> {
     pytoc_grammar() : pytoc_grammar::base_type{codigo} {
@@ -37,8 +21,9 @@ struct pytoc_grammar : qi::grammar<Iterator,
         for_instrucao = qi::string("for") >> '(' >> range_expressao >> ')' >> '{' >> *atribuicao || *if_instrucao >> '}';
         range_expressao = variavel_inteira >> qi::string("in") >> qi::string("range") >> '('  >> qi::int_ >> ')';
         if_instrucao = qi::string("if") >> '(' >> comp_expressao >> ')' >> '{' >> *atribuicao >> '}';
-        comp_expressao = variavel_inteira >> '<' >> qi::int_;
-        // codigo = *variavel_inteira | *if_instrucao | *for_instrucao;
+        comp_expressao = (variavel_inteira >> '<' >> qi::int_) |
+                         (variavel_inteira >> '>' >> qi::int_) |
+                         (variavel_inteira >> qi::string("==") >> qi::int_);
         codigo = *atribuicao || *for_instrucao || *if_instrucao;
     }
 
