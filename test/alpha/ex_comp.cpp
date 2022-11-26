@@ -34,7 +34,7 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
             FOR_INSTRUCAO %=   qi::string("for") >> '(' >> RANGE_EXPRESSAO >> ')' >> '{' >> *FOR_INSTRUCAO >> *ATRIBUICAO >> *FOR_INSTRUCAO || *ATRIBUICAO >> '}';
             RANGE_EXPRESSAO =  VARIAVEL_INTEIRA >> qi::string("in") >> qi::string("range") >> '('  >> qi::int_ >> ')';
             IF_INSTRUCAO_REC = qi::string("if") >> '(' >> COMP_EXPRESSAO >> ')' >> '{' >> *ATRIBUICAO >> '}';
-            IF_INSTRUCAO %=     qi::string("if") >> '(' >> COMP_EXPRESSAO >> ')' >> '{' >> *IF_INSTRUCAO || *ATRIBUICAO >> '}';
+            IF_INSTRUCAO %=     qi::string("if") >> '(' >> COMP_EXPRESSAO >> ')' >> '{' >> *FOR_INSTRUCAO >> *IF_INSTRUCAO || *ATRIBUICAO >> '}';
             COMP_EXPRESSAO = (VARIAVEL_INTEIRA >> '<' >> qi::int_) |
                              (VARIAVEL_INTEIRA >> '>' >> qi::int_) |
                              (VARIAVEL_INTEIRA >> qi::string("==") >> 
