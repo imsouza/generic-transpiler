@@ -15,7 +15,6 @@ using namespace boost::spirit;
 
 template <typename Iterator, typename Skipper>
 class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper> {
-
     qi::rule<Iterator, std::string(), Skipper> VARIAVEL_INTEIRA;
     qi::rule<Iterator, std::string(), Skipper> ATRIBUICAO;
     qi::rule<Iterator, std::string(), Skipper> FOR_INSTRUCAO;
@@ -30,10 +29,9 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
     public:
 
         PyToCpp() : PyToCpp::base_type{CODIGO} {
-
             VARIAVEL_INTEIRA = lexeme[qi::char_ >> *qi::alnum];
             ATRIBUICAO =       VARIAVEL_INTEIRA >> '=' >> qi::int_ >> ';';
-            FOR_INSTRUCAO %=   qi::string("for") >> '(' >> RANGE_EXPRESSAO >> ')' >> '{' >> *FOR_INSTRUCAO  || *ATRIBUICAO>> '}';
+            FOR_INSTRUCAO %=   qi::string("for") >> '(' >> RANGE_EXPRESSAO >> ')' >> '{' >> *FOR_INSTRUCAO >> *ATRIBUICAO >> *FOR_INSTRUCAO || *ATRIBUICAO >> '}';
             RANGE_EXPRESSAO =  VARIAVEL_INTEIRA >> qi::string("in") >> qi::string("range") >> '('  >> qi::int_ >> ')';
             IF_INSTRUCAO_REC = qi::string("if") >> '(' >> COMP_EXPRESSAO >> ')' >> '{' >> *ATRIBUICAO >> '}';
             IF_INSTRUCAO %=     qi::string("if") >> '(' >> COMP_EXPRESSAO >> ')' >> '{' >> *IF_INSTRUCAO || *ATRIBUICAO >> '}';
