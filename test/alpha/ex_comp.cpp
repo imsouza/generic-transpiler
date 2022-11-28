@@ -3,6 +3,9 @@
  */
 #define BOOST_SPIRIT_DEBUG
 #include <boost/spirit/include/qi.hpp>
+#include <boost/phoenix/core.hpp>
+#include <boost/phoenix/operator.hpp>
+#include <boost/variant.hpp>
 #include <string>
 #include <vector>
 #include <stack>
@@ -12,6 +15,17 @@
 
 using namespace std;
 using namespace boost::spirit;
+namespace qi = boost::spirit::qi;
+namespace phoenix = boost::phoenix;
+
+using phoenix::ref;
+using qi::_1;
+
+std::vector<boost::variant<int, std::string, bool>> traduzido;
+
+void addToOutput(boost::variant<int, std::string, bool> &t) {
+    traduzido.emplace_back(t);
+}
 
 template <typename Iterator, typename Skipper>
 class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper> {
@@ -30,16 +44,15 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
 
         PyToCpp() : PyToCpp::base_type{CODIGO} {
             VARIAVEL_INTEIRA = lexeme[qi::char_ >> *qi::alnum];
-            ATRIBUICAO =       VARIAVEL_INTEIRA >> lit('=') >> qi::int_ >> lit(';');
-            FOR_INSTRUCAO %=   qi::string("for") >> lit('(') >> RANGE_EXPRESSAO >> ')' >> lit('{') >> *FOR_INSTRUCAO >> *ATRIBUICAO >> *FOR_INSTRUCAO || *ATRIBUICAO >> lit('}');
-            RANGE_EXPRESSAO =  VARIAVEL_INTEIRA >> qi::string("in") >> qi::string("range") >> lit('(')  >> qi::int_ >> lit(')');
-            IF_INSTRUCAO_REC = qi::string("if") >> lit('(') >> COMP_EXPRESSAO >> lit(')') >> lit('{') >> *ATRIBUICAO >> lit('}');
-            IF_INSTRUCAO %=     qi::string("if") >> lit('(') >> COMP_EXPRESSAO >> lit(')') >> lit('{') >> *FOR_INSTRUCAO >> *IF_INSTRUCAO || *ATRIBUICAO >> lit('}');
+            ATRIBUICAO =       VARIAVEL_INTEIRA >> '=' >> qi::int_ >> ';';
+            FOR_INSTRUCAO %=   qi::string("for") >> '(' >> RANGE_EXPRESSAO >> ')' >> '{' >> *ATRIBUICAO || *IF_INSTRUCAO >> '}';
+            RANGE_EXPRESSAO =  VARIAVEL_INTEIRA >> qi::string("in") >> qi::string("range") >> '('  >> qi::int_ >> ')';
+            IF_INSTRUCAO %=     qi::string("if") >> '(' >> COMP_EXPRESSAO >> ')' >> '{' >> *ATRIBUICAO >> '}';
             COMP_EXPRESSAO = (VARIAVEL_INTEIRA >> lit('<') >> qi::int_) |
                              (VARIAVEL_INTEIRA >> lit('>') >> qi::int_) |
                              (VARIAVEL_INTEIRA >> qi::string("==") >> 
                               qi::int_);
-            CODIGO =         *ATRIBUICAO || *FOR_INSTRUCAO || *IF_INSTRUCAO;
+            CODIGO =         *ATRIBUICAO || (*FOR_INSTRUCAO || *IF_INSTRUCAO)|| (*IF_INSTRUCAO || *FOR_INSTRUCAO);
         }
 };
 
