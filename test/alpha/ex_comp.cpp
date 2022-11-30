@@ -6,6 +6,8 @@
 #include <boost/phoenix/core.hpp>
 #include <boost/phoenix/operator.hpp>
 #include <boost/variant.hpp>
+#include <boost/lambda/lambda.hpp>
+#include <boost/any.hpp>
 #include <string>
 #include <vector>
 #include <stack>
@@ -15,16 +17,22 @@
 
 using namespace std;
 using namespace boost::spirit;
+using namespace boost::lambda;
 namespace qi = boost::spirit::qi;
 namespace phoenix = boost::phoenix;
 
 using phoenix::ref;
-using qi::_1;
+using boost::lambda::_1;
+using boost::any_cast;
 
 std::vector<boost::variant<int, std::string, bool>> traduzido;
 
 void addToOutput(boost::variant<int, std::string, bool> &t) {
     traduzido.emplace_back(t);
+}
+
+void imprimeLexema(boost::any &a) {
+
 }
 
 template <typename Iterator, typename Skipper>
@@ -49,7 +57,7 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
 
             FOR_INSTRUCAO %=   qi::string("for") >> '(' >> RANGE_EXPRESSAO >> ')' >> '{' >> (*ATRIBUICAO || *IF_INSTRUCAO) || (*IF_INSTRUCAO || *ATRIBUICAO) >> '}';
 
-            RANGE_EXPRESSAO =  VARIAVEL_INTEIRA >> qi::string("in") >> qi::string("range") >> '('  >> qi::int_ >> ')';
+            RANGE_EXPRESSAO =  VARIAVEL_INTEIRA >> qi::string("in") >> qi::string("range") >> '(' >> qi::int_ >> ')';
 
             IF_INSTRUCAO %=     qi::string("if") >> '(' >> COMP_EXPRESSAO >> ')' >> '{' >> *ATRIBUICAO >> '}';
 
