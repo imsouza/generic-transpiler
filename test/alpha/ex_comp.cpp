@@ -55,7 +55,6 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
     qi::rule<Iterator, std::string(), Skipper> ATRIBUICAO;
     qi::rule<Iterator, std::string(), Skipper> FOR_INSTRUCAO;
     qi::rule<Iterator, std::string(), Skipper> IF_INSTRUCAO;
-    qi::rule<Iterator, std::string(), Skipper> IF_FOR_REC;
     qi::rule<Iterator, std::string(), Skipper> COMP_EXPRESSAO;
     qi::rule<Iterator, std::string(), Skipper> RANGE_EXPRESSAO;
     qi::rule<Iterator, std::string(), Skipper> PRINT_FUNCAO;
@@ -87,7 +86,7 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
                 '(' >> qi::int_ >> ')';
 
             /** if regra */
-            IF_INSTRUCAO %=     qi::string("if")[&imprimeLexema] >>
+            IF_INSTRUCAO %= qi::string("if")[&imprimeLexema] >>
                 qi::char_('(')[&imprimeChar] >>
                 COMP_EXPRESSAO >>
                 qi::char_(')')[&imprimeChar] >>
