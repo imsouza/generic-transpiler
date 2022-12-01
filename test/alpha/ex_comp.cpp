@@ -5,9 +5,6 @@
 #include <boost/spirit/include/qi.hpp>
 #include <boost/phoenix/core.hpp>
 #include <boost/phoenix/operator.hpp>
-#include <boost/variant.hpp>
-#include <boost/lambda/lambda.hpp>
-#include <boost/any.hpp>
 #include <string>
 #include <vector>
 #include <stack>
@@ -17,13 +14,10 @@
 
 using namespace std;
 using namespace boost::spirit;
-using namespace boost::lambda;
 namespace qi = boost::spirit::qi;
 namespace phoenix = boost::phoenix;
 
 using phoenix::ref;
-using boost::lambda::_1;
-using boost::any_cast;
 
 std::vector<boost::variant<int, std::string, bool>> traduzido;
 
@@ -31,8 +25,28 @@ void addToOutput(boost::variant<int, std::string, bool> &t) {
     traduzido.emplace_back(t);
 }
 
-void imprimeLexema(boost::any &a) {
+void imprimeLexema(std::string &a) {
+    cout << "LX: " << a << "\n"; 
+}
 
+void imprimeChar(const char a) {
+    cout << "CH: " << a << "\n"; 
+}
+
+void imprimeInt(const int a) {
+    cout << "INT: " << a << "\n"; 
+}
+
+void imprimeAtrib(std::string &a) {
+    cout << "ATR: int " << a << "\n";
+}
+
+void imprimeIf(std::string &a) {
+    cout << "IF: " << a << "\n";
+}
+
+void imprimeVar(std::string &a) {
+    cout << "VAR: int " << a << "\n";
 }
 
 template <typename Iterator, typename Skipper>
@@ -53,23 +67,43 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
 
             VARIAVEL_INTEIRA = lexeme[qi::char_ >> *qi::alnum];
 
-            ATRIBUICAO =       VARIAVEL_INTEIRA >> '=' >> qi::int_ >> ';';
+            /** atribuicao regra */
+            ATRIBUICAO = (VARIAVEL_INTEIRA >> 
+                    qi::char_('=') >> 
+                    qi::alnum >> 
+                    qi::char_(';'));
 
-            FOR_INSTRUCAO %=   qi::string("for") >> '(' >> RANGE_EXPRESSAO >> ')' >> '{' >> (*ATRIBUICAO || *IF_INSTRUCAO) || (*IF_INSTRUCAO || *ATRIBUICAO) >> '}';
+            /** for regra */
+            FOR_INSTRUCAO %=   qi::string("for")[&imprimeLexema] >>
+                qi::char_('(')[&imprimeChar] >>
+                RANGE_EXPRESSAO >> qi::char_(')')[&imprimeChar] >>
+                qi::char_('{')[&imprimeChar] >> 
+                (*ATRIBUICAO || *IF_INSTRUCAO) ||
+                (*IF_INSTRUCAO || *ATRIBUICAO)  >>
+                qi::char_('}')[&imprimeChar];
 
-            RANGE_EXPRESSAO =  VARIAVEL_INTEIRA >> qi::string("in") >> qi::string("range") >> '(' >> qi::int_ >> ')';
+            RANGE_EXPRESSAO =  VARIAVEL_INTEIRA >>
+                qi::string("in") >> qi::string("range") >>
+                '(' >> qi::int_ >> ')';
 
-            IF_INSTRUCAO %=     qi::string("if") >> '(' >> COMP_EXPRESSAO >> ')' >> '{' >> *ATRIBUICAO >> '}';
+            /** if regra */
+            IF_INSTRUCAO %=     qi::string("if")[&imprimeLexema] >>
+                qi::char_('(')[&imprimeChar] >>
+                COMP_EXPRESSAO >>
+                qi::char_(')')[&imprimeChar] >>
+                qi::char_('{')[&imprimeChar] >>
+                *ATRIBUICAO >>
+                qi::char_('}')[&imprimeChar];
 
-            IF_FOR_REC %= *FOR_INSTRUCAO || *IF_INSTRUCAO;
-
+            /** comparacao regra */
             COMP_EXPRESSAO = (VARIAVEL_INTEIRA >> lit('<') >> qi::int_) |
                              (VARIAVEL_INTEIRA >> lit('>') >> qi::int_) |
                              (VARIAVEL_INTEIRA >> qi::string("==") >> 
                               qi::int_);
 
-
-            CODIGO =         *ATRIBUICAO || (*FOR_INSTRUCAO || *IF_INSTRUCAO)|| (*IF_INSTRUCAO || *FOR_INSTRUCAO);
+            CODIGO = *ATRIBUICAO[&imprimeVar] ||
+                     (*FOR_INSTRUCAO || *IF_INSTRUCAO) ||
+                     (*IF_INSTRUCAO || *FOR_INSTRUCAO);
         }
 };
 
