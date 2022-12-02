@@ -57,6 +57,7 @@ void imprimeRangeP0(std::string &a) {
 
 void imprimeRangeP1(int &a) {
     cout << rangeTmp << " < " << a << "; " << rangeTmp << "++";
+    rangeTmp = "";
 }
 
 template <typename Iterator, typename Skipper>
@@ -98,7 +99,7 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
             /** if regra */
             IF_INSTRUCAO %= qi::string("if")[&imprimeIf] >>
                 qi::char_('(')[&imprimeChar] >>
-                COMP_EXPRESSAO >>
+                COMP_EXPRESSAO[imprimeAtrib] >> 
                 qi::char_(')')[&imprimeChar] >>
                 qi::char_('{')[&imprimeChar] >>
                 *FOR_INSTRUCAO >> *IF_INSTRUCAO || *ATRIBUICAO >>
