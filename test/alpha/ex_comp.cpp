@@ -85,7 +85,7 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
                 (*IF_INSTRUCAO || *ATRIBUICAO) >>
                 qi::char_('}')[&imprimeChar];
 
-            RANGE_EXPRESSAO =  VARIAVEL_INTEIRA[imprimeRangeP0>] >>
+            RANGE_EXPRESSAO =  VARIAVEL_INTEIRA[imprimeRangeP0] >>
                 qi::string("in") >> qi::string("range") >>
                 '(' >> qi::int_ >> ')';
 

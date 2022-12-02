@@ -2,7 +2,6 @@ va = 3;
 pi = 3;
 
 for(i in range (10)) {
-<<<<<<< HEAD
     va = 3;
     if ( a < 19 ) {
 
@@ -22,11 +21,6 @@ for(i in range (10)) {
     if ( a < 19 ) {
 
     }
-    for(i in range (10)) {
-        va = 3;
-        if ( a < 19 ) {
-
-=======
     if (va == 3) {
         x = 1;
     }
@@ -63,7 +57,6 @@ if (va == 3) {
                     }
                 }
             }
->>>>>>> 9470c84fb0fa8ad7099b617190ce16d16ffca545
         }
     }
 }
