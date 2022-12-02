@@ -49,6 +49,10 @@ void imprimeVar(std::string &a) {
     cout << "VAR: int " << a << "\n";
 }
 
+void imprimeRangeP0(std::string &a) {
+    cout << "VAR: int " << a << "\n";
+}
+
 template <typename Iterator, typename Skipper>
 class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper> {
     qi::rule<Iterator, std::string(), Skipper> VARIAVEL_INTEIRA;
@@ -78,10 +82,10 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
                 RANGE_EXPRESSAO >> qi::char_(')')[&imprimeChar] >>
                 qi::char_('{')[&imprimeChar] >> 
                 (*ATRIBUICAO || *IF_INSTRUCAO) ||
-                (*IF_INSTRUCAO || *ATRIBUICAO)  >>
+                (*IF_INSTRUCAO || *ATRIBUICAO) >>
                 qi::char_('}')[&imprimeChar];
 
-            RANGE_EXPRESSAO =  VARIAVEL_INTEIRA >>
+            RANGE_EXPRESSAO =  VARIAVEL_INTEIRA[imprimeRangeP0>] >>
                 qi::string("in") >> qi::string("range") >>
                 '(' >> qi::int_ >> ')';
 
