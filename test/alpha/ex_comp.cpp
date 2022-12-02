@@ -25,8 +25,8 @@ void addToOutput(boost::variant<int, std::string, bool> &t) {
     traduzido.emplace_back(t);
 }
 
-void imprimeLexema(std::string &a) {
-    cout << "LX: " << a << "\n"; 
+void imprimeFor(std::string &a) {
+    cout << "FOR: " << a << "\n"; 
 }
 
 void imprimeChar(const char a) {
@@ -49,12 +49,19 @@ void imprimeVar(std::string &a) {
     cout << "VAR: int " << a << "\n";
 }
 
+std::string rangeTmp;
 void imprimeRangeP0(std::string &a) {
-    cout << "VAR: int " << a << "\n";
+    rangeTmp = a;
+    cout << "int " << a << " = 0; ";
+}
+
+void imprimeRangeP1(int &a) {
+    cout << rangeTmp << " < " << a << "; " << rangeTmp << "++";
 }
 
 template <typename Iterator, typename Skipper>
 class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper> {
+
     qi::rule<Iterator, std::string(), Skipper> VARIAVEL_INTEIRA;
     qi::rule<Iterator, std::string(), Skipper> ATRIBUICAO;
     qi::rule<Iterator, std::string(), Skipper> FOR_INSTRUCAO;
@@ -77,7 +84,7 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
                     qi::char_(';'));
 
             /** for regra */
-            FOR_INSTRUCAO %=   qi::string("for")[&imprimeLexema] >>
+            FOR_INSTRUCAO %=   qi::string("for")[&imprimeFor] >>
                 qi::char_('(')[&imprimeChar] >>
                 RANGE_EXPRESSAO >> qi::char_(')')[&imprimeChar] >>
                 qi::char_('{')[&imprimeChar] >>
@@ -86,10 +93,10 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
 
             RANGE_EXPRESSAO =  VARIAVEL_INTEIRA[imprimeRangeP0] >>
                 qi::string("in") >> qi::string("range") >>
-                '(' >> qi::int_ >> ')';
+                '(' >> qi::int_[imprimeRangeP1] >> ')';
 
             /** if regra */
-            IF_INSTRUCAO %= qi::string("if")[&imprimeLexema] >>
+            IF_INSTRUCAO %= qi::string("if")[&imprimeIf] >>
                 qi::char_('(')[&imprimeChar] >>
                 COMP_EXPRESSAO >>
                 qi::char_(')')[&imprimeChar] >>

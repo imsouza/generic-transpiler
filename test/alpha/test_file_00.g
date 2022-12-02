@@ -27,8 +27,12 @@ for(i in range (10)) {
 }
 
 if (va == 3) {
+    if (va == 3) {
+    }
     for(i in range (10)) {
         x = 1;
+    }
+    if (va == 3) {
     }
 }
 
@@ -60,3 +64,4 @@ if (va == 3) {
         }
     }
 }
+
