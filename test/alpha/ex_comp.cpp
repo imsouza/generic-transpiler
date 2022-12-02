@@ -80,9 +80,8 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
             FOR_INSTRUCAO %=   qi::string("for")[&imprimeLexema] >>
                 qi::char_('(')[&imprimeChar] >>
                 RANGE_EXPRESSAO >> qi::char_(')')[&imprimeChar] >>
-                qi::char_('{')[&imprimeChar] >> 
-                (*ATRIBUICAO || *IF_INSTRUCAO) ||
-                (*IF_INSTRUCAO || *ATRIBUICAO) >>
+                qi::char_('{')[&imprimeChar] >>
+                *FOR_INSTRUCAO >> *ATRIBUICAO >> *FOR_INSTRUCAO || *ATRIBUICAO >>
                 qi::char_('}')[&imprimeChar];
 
             RANGE_EXPRESSAO =  VARIAVEL_INTEIRA[imprimeRangeP0] >>
@@ -95,7 +94,7 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
                 COMP_EXPRESSAO >>
                 qi::char_(')')[&imprimeChar] >>
                 qi::char_('{')[&imprimeChar] >>
-                *ATRIBUICAO >>
+                *FOR_INSTRUCAO >> *IF_INSTRUCAO || *ATRIBUICAO >>
                 qi::char_('}')[&imprimeChar];
 
             /** comparacao regra */
