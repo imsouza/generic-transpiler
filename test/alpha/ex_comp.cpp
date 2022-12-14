@@ -77,6 +77,7 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
 
         PyToCpp() : PyToCpp::base_type{CODIGO} {
 
+            /** variavel */
             VARIAVEL_INTEIRA = lexeme[qi::char_ >> *qi::alnum];
 
             /** atribuicao regra */
@@ -93,6 +94,7 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
                 *FOR_INSTRUCAO >> *ATRIBUICAO >> *FOR_INSTRUCAO || *ATRIBUICAO >>
                 qi::char_('}')[&imprimeChar];
 
+            /** range expressao */
             RANGE_EXPRESSAO =  VARIAVEL_INTEIRA[imprimeRangeP0] >>
                 qi::string("in") >> qi::string("range") >>
                 '(' >> qi::int_[imprimeRangeP1] >> ')';
@@ -117,6 +119,7 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
                     qi::string("==")[&imprimeCompVar]  >> 
                     qi::int_[&imprimeInt]);
 
+            /** codigo geral */
             CODIGO = *ATRIBUICAO[&imprimeVar] ||
                      (*FOR_INSTRUCAO || *IF_INSTRUCAO) ||
                      (*IF_INSTRUCAO || *FOR_INSTRUCAO);
