@@ -41,6 +41,10 @@ void imprimeIf(std::string &a) {
     cout << "IF: " << a << "\n";
 }
 
+void imprimeElseIf(std::string &a) {
+    cout << "ELSE IF: " << a << "\n";
+}
+
 void imprimeVar(std::string &a) {
     cout << "VAR: int " << a << "\n";
 }
@@ -68,6 +72,8 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
     qi::rule<Iterator, std::string(), Skipper> ATRIBUICAO;
     qi::rule<Iterator, std::string(), Skipper> FOR_INSTRUCAO;
     qi::rule<Iterator, std::string(), Skipper> IF_INSTRUCAO;
+    qi::rule<Iterator, std::string(), Skipper> ELSEIF_INSTRUCAO;
+    qi::rule<Iterator, std::string(), Skipper> ELSE_INSTRUCAO;
     qi::rule<Iterator, std::string(), Skipper> COMP_EXPRESSAO;
     qi::rule<Iterator, std::string(), Skipper> RANGE_EXPRESSAO;
     qi::rule<Iterator, std::string(), Skipper> PRINT_FUNCAO;
@@ -82,22 +88,27 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
 
             /** atribuicao regra */
             ATRIBUICAO = (VARIAVEL_INTEIRA >> 
-                    qi::char_('=') >> 
-                    qi::alnum >> 
-                    qi::char_(';'));
+                qi::char_('=') >> 
+                qi::alnum >> 
+                qi::char_(';'))
+            ;
 
             /** for regra */
             FOR_INSTRUCAO =   qi::string("for")[&imprimeFor] >>
                 qi::char_('(')[&imprimeChar] >>
                 RANGE_EXPRESSAO >> qi::char_(')')[&imprimeChar] >>
                 qi::char_('{')[&imprimeChar] >>
-                *FOR_INSTRUCAO >> *ATRIBUICAO >> *FOR_INSTRUCAO || *ATRIBUICAO >>
-                qi::char_('}')[&imprimeChar];
+                *FOR_INSTRUCAO >> 
+                *ATRIBUICAO[&imprimeVar] >> *FOR_INSTRUCAO ||
+                *ATRIBUICAO >>
+                qi::char_('}')[&imprimeChar]
+            ;
 
             /** range expressao */
             RANGE_EXPRESSAO =  VARIAVEL_INTEIRA[imprimeRangeP0] >>
                 qi::string("in") >> qi::string("range") >>
-                '(' >> qi::int_[imprimeRangeP1] >> ')';
+                '(' >> qi::int_[imprimeRangeP1] >> ')'
+            ;
 
             /** if regra */
             IF_INSTRUCAO %= qi::string("if")[&imprimeIf] >>
@@ -105,24 +116,38 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
                 COMP_EXPRESSAO >>
                 qi::char_(')')[&imprimeChar] >>
                 qi::char_('{')[&imprimeChar] >>
-                *FOR_INSTRUCAO >> *IF_INSTRUCAO || *ATRIBUICAO >>
-                qi::char_('}')[&imprimeChar];
+                *FOR_INSTRUCAO >> *IF_INSTRUCAO ||
+                *ATRIBUICAO[&imprimeVar] >>
+                qi::char_('}')[&imprimeChar]
+            ;
 
+            /** else if instrucao */
+            ELSEIF_INSTRUCAO = qi::string("else") >>
+                IF_INSTRUCAO;
+
+            /** else instrucao */
+            // ELSE_INSTRUCAO = qi::string("else") >> -qi::string("if") >>
+            //     qi::char_('{') >> *FOR_INSTRUCAO >> *IF_INSTRUCAO ||
+            //     *ATRIBUICAO[&imprimeVar] >> qi::char_('}');
             /** comparacao regra */
             COMP_EXPRESSAO = (VARIAVEL_INTEIRA[&imprimeCompVar] >>
-                    qi::char_('<')[&imprimeChar] >>
-                    qi::int_[&imprimeInt]) |
-                    (VARIAVEL_INTEIRA[&imprimeCompVar] >>
-                    qi::char_('>')[&imprimeChar] >>
-                    qi::int_[&imprimeInt]) |
-                    (VARIAVEL_INTEIRA[&imprimeCompVar] >>
-                    qi::string("==")[&imprimeCompVar]  >> 
-                    qi::int_[&imprimeInt]);
+                qi::char_('<')[&imprimeChar] >>
+                qi::int_[&imprimeInt]) |
+                (VARIAVEL_INTEIRA[&imprimeCompVar] >>
+                qi::char_('>')[&imprimeChar] >>
+                qi::int_[&imprimeInt]) |
+                (VARIAVEL_INTEIRA[&imprimeCompVar] >>
+                qi::string("==")[&imprimeCompVar]  >> 
+                qi::int_[&imprimeInt])
+            ;
 
             /** codigo geral */
             CODIGO = *ATRIBUICAO[&imprimeVar] ||
-                     (*FOR_INSTRUCAO || *IF_INSTRUCAO) ||
-                     (*IF_INSTRUCAO || *FOR_INSTRUCAO);
+                (*FOR_INSTRUCAO || *IF_INSTRUCAO >>
+                (*ELSEIF_INSTRUCAO[&imprimeElseIf] || *ELSE_INSTRUCAO))|
+                (*IF_INSTRUCAO >> (*ELSEIF_INSTRUCAO ||
+                *ELSE_INSTRUCAO) || *FOR_INSTRUCAO)
+            ;
         }
 };
 
