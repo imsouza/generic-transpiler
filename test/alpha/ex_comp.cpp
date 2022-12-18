@@ -41,10 +41,6 @@ void imprimeIf(std::string &a) {
     cout << "IF: " << a << "\n";
 }
 
-void imprimeElseIf(std::string &a) {
-    cout << "ELSE IF: " << a << "\n";
-}
-
 void imprimeVar(std::string &a) {
     cout << "VAR: int " << a << "\n";
 }
@@ -63,6 +59,16 @@ void imprimeRangeP1(int &a) {
 void imprimeCompVar(std::string &a) {
     cout << "COMP: " << a << "\n";
     a.clear();
+}
+
+void imprimePrintFunc(std::vector<char> &a) {
+    stringstream ss;
+    for (auto &i : a) { ss << i; }
+    cout << "PRINT: " << ss.str() << " ";
+}
+
+void imprimePrintFuncVar(std::string &a) {
+    cout << "PRINT VAR: " << a << "\n";
 }
 
 template <typename Iterator, typename Skipper>
@@ -99,7 +105,7 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
                 RANGE_EXPRESSAO >> qi::char_(')')[&imprimeChar] >>
                 qi::char_('{')[&imprimeChar] >>
                 *FOR_INSTRUCAO >> 
-                *ATRIBUICAO[&imprimeVar] >> *FOR_INSTRUCAO ||
+                *ATRIBUICAO[&imprimeVar] >> *FOR_INSTRUCAO |
                 *ATRIBUICAO >>
                 qi::char_('}')[&imprimeChar]
             ;
@@ -116,7 +122,7 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
                 COMP_EXPRESSAO >>
                 qi::char_(')')[&imprimeChar] >>
                 qi::char_('{')[&imprimeChar] >>
-                *FOR_INSTRUCAO >> *IF_INSTRUCAO ||
+                *FOR_INSTRUCAO >> *IF_INSTRUCAO |
                 *ATRIBUICAO[&imprimeVar] >>
                 qi::char_('}')[&imprimeChar]
             ;
@@ -129,7 +135,6 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
             // ELSE_INSTRUCAO = qi::string("else") >> -qi::string("if") >>
             //     qi::char_('{') >> *FOR_INSTRUCAO >> *IF_INSTRUCAO ||
             //     *ATRIBUICAO[&imprimeVar] >> qi::char_('}');
-
             /** comparacao regra */
             COMP_EXPRESSAO = (VARIAVEL_INTEIRA[&imprimeCompVar] >>
                 qi::char_('<')[&imprimeChar] >>
@@ -142,10 +147,19 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
                 qi::int_[&imprimeInt])
             ;
 
+            /** print function */
+            PRINT_FUNCAO = qi::string("print") >>
+                qi::char_('(') >> qi::char_('"') >>
+                (*qi::alnum)[&imprimePrintFunc] >>
+                qi::char_('"') >> qi::char_(',') >>
+                VARIAVEL_INTEIRA[&imprimePrintFuncVar] >>
+                qi::char_(')') >> qi::char_(';')
+            ;
+
             /** codigo geral */
             CODIGO = *ATRIBUICAO[&imprimeVar] ||
                 (*FOR_INSTRUCAO || *IF_INSTRUCAO >>
-                (*ELSEIF_INSTRUCAO[&imprimeElseIf] || *ELSE_INSTRUCAO))|
+                (*ELSEIF_INSTRUCAO || *ELSE_INSTRUCAO || *PRINT_FUNCAO))|
                 (*IF_INSTRUCAO >> (*ELSEIF_INSTRUCAO ||
                 *ELSE_INSTRUCAO) || *FOR_INSTRUCAO)
             ;
