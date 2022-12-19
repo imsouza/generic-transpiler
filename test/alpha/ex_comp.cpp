@@ -20,9 +20,11 @@ namespace phoenix = boost::phoenix;
 using phoenix::ref;
 
 std::vector<boost::variant<int, std::string, bool>> traduzido;
+ofstream ofs;
 
 void imprimeFor(std::string &a) {
     cout << "FOR: " << a << "\n"; 
+    ofs << "<for>\n";
 }
 
 void imprimeChar(const char a) {
@@ -150,7 +152,7 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
             /** print function */
             PRINT_FUNCAO = qi::string("print") >>
                 qi::char_('(') >> qi::char_('"') >>
-                (*qi::alnum)[&imprimePrintFunc] >>
+                qi::lexeme[*qi::alnum][&imprimePrintFunc] >>
                 qi::char_('"') >> qi::char_(',') >>
                 VARIAVEL_INTEIRA[&imprimePrintFuncVar] >>
                 qi::char_(')') >> qi::char_(';')
@@ -159,7 +161,8 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
             /** codigo geral */
             CODIGO = *ATRIBUICAO[&imprimeVar] ||
                 (*FOR_INSTRUCAO || *IF_INSTRUCAO >>
-                (*ELSEIF_INSTRUCAO || *ELSE_INSTRUCAO || *PRINT_FUNCAO))|
+                (*ELSEIF_INSTRUCAO || *ELSE_INSTRUCAO ||
+                 *PRINT_FUNCAO)) |
                 (*IF_INSTRUCAO >> (*ELSEIF_INSTRUCAO ||
                 *ELSE_INSTRUCAO) || *FOR_INSTRUCAO)
             ;
@@ -168,6 +171,7 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
 
 int main()
 {
+    ofs.open("arvore.xml");
     std::stringstream ss;
     for (std::string s; std::getline(std::cin, s);) {
         ss << s;
@@ -184,5 +188,6 @@ int main()
     }
     if (it != std::end(s))
         std::cerr << "Erro em " << *it << "\n";
+    ofs.close();
 }
 

@@ -8,7 +8,6 @@ for(i in range (10)) {
             }
             else if (b < 63) {
                 print("Fim");
-
             }
         }
     }
