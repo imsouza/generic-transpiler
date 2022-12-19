@@ -7,8 +7,11 @@ for(i in range (10)) {
                 print("OI Mundo");
             }
             else if (b < 63) {
-                print("Fim");
+                print("Op Um\n");
 
+            }
+            else {
+                print("Fim");
             }
         }
     }

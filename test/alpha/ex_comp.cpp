@@ -90,7 +90,6 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
     qi::rule<Iterator, std::vector<std::string>(), Skipper> CODIGO;
 
     public:
-
         PyToCpp() : PyToCpp::base_type{CODIGO} {
 
             /** variavel */
@@ -136,10 +135,14 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
                 IF_INSTRUCAO;
 
             /** else instrucao */
-            ELSE_INSTRUCAO = qi::string("else")[&imprimeElse] >> -qi::string("if") >>
-            qi::char_('{')[&imprimeChar] 
-            >> *ATRIBUICAO[&imprimeVar] >> (*ATRIBUICAO[&imprimeVar] | *FOR_INSTRUCAO | *IF_INSTRUCAO | *ELSEIF_INSTRUCAO) >>
-            qi::char_('}')[&imprimeChar]
+            ELSE_INSTRUCAO = qi::string("else")[&imprimeElse] >>
+                -qi::string("if") >>
+                qi::char_('{')[&imprimeChar] >>
+                *ATRIBUICAO[&imprimeVar] >>
+                (*ATRIBUICAO[&imprimeVar] |
+                 *FOR_INSTRUCAO | *IF_INSTRUCAO |
+                 *ELSEIF_INSTRUCAO) >>
+                qi::char_('}')[&imprimeChar]
             ;
             
             /** comparacao regra */
@@ -157,7 +160,7 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
             /** print function */
             PRINT_FUNCAO = qi::string("print") >>
                 qi::char_('(') >> qi::char_('"') >>
-                (*qi::alnum)[&imprimePrintFunc] >>
+                qi::lexeme[*qi::alnum][&imprimePrintFunc] >>
                 qi::char_('"') >> qi::char_(',') >>
                 VARIAVEL_INTEIRA[&imprimePrintFuncVar] >>
                 qi::char_(')') >> qi::char_(';')
