@@ -137,7 +137,6 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
     qi::rule<Iterator, std::vector<std::string>(), Skipper> CODIGO;
 
     public:
-
         PyToCpp() : PyToCpp::base_type{CODIGO} {
 
             /** variavel */
@@ -183,10 +182,14 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
                 IF_INSTRUCAO;
 
             /** else instrucao */
-            ELSE_INSTRUCAO = qi::string("else")[&imprimeElse] >> -qi::string("if") >>
-            qi::char_('{')[&imprimeChar] 
-            >> *ATRIBUICAO[&imprimeVar] >> (*ATRIBUICAO[&imprimeVar] | *FOR_INSTRUCAO | *IF_INSTRUCAO | *ELSEIF_INSTRUCAO) >>
-            qi::char_('}')[&imprimeChar]
+            ELSE_INSTRUCAO = qi::string("else")[&imprimeElse] >>
+                -qi::string("if") >>
+                qi::char_('{')[&imprimeChar] >>
+                *ATRIBUICAO[&imprimeVar] >>
+                (*ATRIBUICAO[&imprimeVar] |
+                 *FOR_INSTRUCAO | *IF_INSTRUCAO |
+                 *ELSEIF_INSTRUCAO) >>
+                qi::char_('}')[&imprimeChar]
             ;
             
             /** comparacao regra */
@@ -204,12 +207,19 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
             /** print function */
             PRINT_FUNCAO = qi::string("print") >>
                 qi::char_('(') >> qi::char_('"') >>
+<<<<<<< HEAD
                 (*qi::alnum)[&imprimePrintFunc] >>
                 qi::char_('"') >> qi::char_(')') >> qi::char_(';')
                 //     // [&imprimePrintFunc] >>
                 // qi::char_('"') >> qi::char_(',') >>
                 // VARIAVEL_INTEIRA /*[&imprimePrintFuncVar]*/ >>
                 // qi::char_(')') >> qi::char_(';')
+=======
+                qi::lexeme[*qi::alnum][&imprimePrintFunc] >>
+                qi::char_('"') >> qi::char_(',') >>
+                VARIAVEL_INTEIRA[&imprimePrintFuncVar] >>
+                qi::char_(')') >> qi::char_(';')
+>>>>>>> 6631023aa4c088b9d24cdd9f06d9315004009da0
             ;
 
             /** codigo geral */
