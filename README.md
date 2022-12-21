@@ -42,6 +42,43 @@ using namespace std;
 }
 ```
 
+output xml tree [/tree]
+```
+<tree>
+    <var>
+        va=3;
+    </var>
+    <for>
+        for
+    </for>
+    <range>
+        int i = 0; i < 10; i++
+    </range>
+    <var>
+        pi=3;
+    </var>
+    <for>
+        for
+    </for>
+    <range>
+    int i = 0; i < 10; i++
+    </range>
+    <if>
+        if
+    </if>
+    <comp>
+        i
+    </comp>
+    <else>
+        else
+    </else>
+    <var>
+        pi=2;
+    </var>
+</tree>
+
+```
+
 # Run
 
 ```make && make run```
