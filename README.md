@@ -90,6 +90,7 @@ Linux
 # Authors
 
 Mateus Almeida
+
 Joilnen Leite
 
 # License
