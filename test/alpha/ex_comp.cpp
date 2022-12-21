@@ -15,55 +15,94 @@
 using namespace std;
 using namespace boost::spirit;
 namespace qi = boost::spirit::qi;
-namespace phoenix = boost::phoenix;
-
-using phoenix::ref;
 
 std::vector<boost::variant<int, std::string, bool>> traduzido;
 ofstream ofs;
+ofstream codEmCpp;
 
 void imprimeFor(std::string &a) {
     cout << "FOR: " << a << "\n"; 
+    codEmCpp << a << "\n"; 
+
     ofs << "<for>\n";
+    ofs << a << "\n"; 
+    ofs << "</for>\n";
 }
 
 void imprimeChar(const char a) {
     cout << "CH: " << a << "\n"; 
+    codEmCpp << a << "\n"; 
 }
 
 void imprimeInt(const int a) {
     cout << "INT: " << a << "\n"; 
+    codEmCpp << a << "\n"; 
 }
 
 void imprimeAtrib(std::string &a) {
     cout << "ATR: int " << a << "\n";
+    codEmCpp << a << "\n"; 
+
+    ofs << "<atrib>\n";
+    ofs << a << "\n"; 
+    ofs << "</atrib>\n";
 }
 
 void imprimeIf(std::string &a) {
     cout << "IF: " << a << "\n";
+    codEmCpp << a << "\n"; 
+
+    ofs << "<if>\n";
+    ofs << a << "\n"; 
+    ofs << "</if>\n";
 }
 
 void imprimeElse(std::string &a) {
     cout << "ELSE: " << a << "\n";
+    codEmCpp << a << "\n"; 
+
+    ofs << "<else>\n";
+    ofs << a << "\n"; 
+    ofs << "</else>\n";
 }
 
 void imprimeVar(std::string &a) {
     cout << "VAR: int " << a << "\n";
+    codEmCpp << "int " << a << "\n";
+
+    ofs << "<var>\n";
+    ofs << a << "\n"; 
+    ofs << "</var>\n";
 }
 
 std::string rangeTmp;
 void imprimeRangeP0(std::string &a) {
     rangeTmp = a;
     cout << "int " << a << " = 0; ";
+    codEmCpp << "int " << a << " = 0; ";
+
+    ofs << "<range>\n";
+    ofs << "int " << a << " = 0; ";
 }
 
 void imprimeRangeP1(int &a) {
     cout << rangeTmp << " < " << a << "; " << rangeTmp << "++";
+    codEmCpp << rangeTmp << " < " << a << "; " << rangeTmp << "++";
+
+    ofs << rangeTmp << " < " << a << "; " << rangeTmp << "++";
+    ofs << "</range>\n";
+
     rangeTmp.clear();
 }
 
 void imprimeCompVar(std::string &a) {
     cout << "COMP: " << a << "\n";
+    codEmCpp << a << "\n";
+
+    ofs << "<comp>\n";
+    ofs << a << "\n"; 
+    ofs << "</comp>\n";
+
     a.clear();
 }
 
@@ -71,10 +110,16 @@ void imprimePrintFunc(std::vector<char> &a) {
     stringstream ss;
     for (auto &i : a) { ss << i; }
     cout << "PRINT: " << ss.str() << " ";
+    codEmCpp << "cout << \"" << ss.str() << "\";\n";
+
+    ofs << "<print>\n";
+    ofs << ss.str() << " ";
+    ofs << "</print>\n";
 }
 
 void imprimePrintFuncVar(std::string &a) {
     cout << "PRINT VAR: " << a << "\n";
+    codEmCpp <<  a << "\n";
 }
 
 template <typename Iterator, typename Skipper>
@@ -101,7 +146,7 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
             /** atribuicao regra */
             ATRIBUICAO = (VARIAVEL_INTEIRA >> 
                 qi::char_('=') >> 
-                qi::alnum >> 
+                +qi::alnum >> 
                 qi::char_(';'))
             ;
 
@@ -159,10 +204,12 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
             /** print function */
             PRINT_FUNCAO = qi::string("print") >>
                 qi::char_('(') >> qi::char_('"') >>
-                qi::lexeme[*qi::alnum][&imprimePrintFunc] >>
-                qi::char_('"') >> qi::char_(',') >>
-                VARIAVEL_INTEIRA[&imprimePrintFuncVar] >>
-                qi::char_(')') >> qi::char_(';')
+                (*qi::alnum)[&imprimePrintFunc] >>
+                qi::char_('"') >> qi::char_(')') >> qi::char_(';')
+                //     // [&imprimePrintFunc] >>
+                // qi::char_('"') >> qi::char_(',') >>
+                // VARIAVEL_INTEIRA /*[&imprimePrintFuncVar]*/ >>
+                // qi::char_(')') >> qi::char_(';')
             ;
 
             /** codigo geral */
@@ -172,6 +219,7 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
                  *PRINT_FUNCAO)) |
                 (*IF_INSTRUCAO >> (*ELSEIF_INSTRUCAO ||
                 *ELSE_INSTRUCAO) || *FOR_INSTRUCAO) ||
+                *PRINT_FUNCAO ||
                 (*IF_INSTRUCAO >> *ELSE_INSTRUCAO);
         }
 };
@@ -179,6 +227,9 @@ class PyToCpp : public qi::grammar<Iterator, std::vector<std::string>(), Skipper
 int main()
 {
     ofs.open("arvore.xml");
+    codEmCpp.open("codigo_em_cpp.cpp");
+    codEmCpp << "#include <iostream>\nusing namespace std;\n int main() {\n";
+    ofs << "<arvore>\n";
     std::stringstream ss;
     for (std::string s; std::getline(std::cin, s);) {
         ss << s;
@@ -195,6 +246,9 @@ int main()
     }
     if (it != std::end(s))
         std::cerr << "Erro em " << *it << "\n";
+    ofs << "</arvore>\n";
+    codEmCpp << "\nreturn 0;\n}\n";
+    codEmCpp.close();
     ofs.close();
 }
 
