@@ -1,9 +1,0 @@
-./a.out 
-for ( a in range (10)) { pp = 43; if ( pp < 99) { pp = 0; }}
-for ( a in range (10)) { pp = 43; if ( pp < 99) { pp = 0;   
-Erro em i
-for ( a in range (10)) { pp = 43; if ( pp < 99) { pp = 0; } 
-for ( a in range (10)) { pp = 43; if ( pp < 99) { pp = 0;   
-Erro em i
-^C
-
